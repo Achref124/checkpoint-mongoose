@@ -70,5 +70,57 @@ exports.getPersonByIdAndEdit = async(req,res) =>{
                 res.status(200).send({msg:'removed successfully'})
             }
         } catch (error) {
-            res.status(400).send({msg:'error on editing ', error})
+            res.status(400).send({msg:'error on deleting ', error})
         } }
+
+        exports.getOne = async(req,res) =>{
+            try {
+                const searched = req.body
+                const persons = await person.findOne(req.body)
+                if(!persons){
+                    res.status(400).send({msg:'person not found'})
+                }
+                else{
+                    res.status(200).send({msg:'found successfully',persons})
+                }
+            } catch (error) {
+                res.status(400).send({msg:'error on Get one',error})
+            }
+        }
+        exports.Delete_m = async(req,res) =>{
+            try {
+                const searched = req.body
+                const persons = await person.remove(searched)
+                if(!persons){
+                    res.status(400).send({msg:'person not found'})
+                }
+                else{
+                    res.status(200).send({msg:'deleted successfully'})
+                }
+            } catch (error) {
+                res.status(400).send({msg:'error on get one & delete',error})
+            }
+        }
+
+        exports.chainSearch = async(req,res) =>{
+               try {
+                var foodToSearch = ["burrito"];
+                const queryChain = await person.find({ favoriteFoods: foodToSearch})
+                    .sort({ name:"desc"})
+                    .limit(2)
+                    .select("-age")
+                    .exec((error,data) =>{
+                        if(error)
+                        {done(err)}
+                        done(null,data)
+                    }
+                    );
+                    ;
+                    if(!queryChain){
+                        res.status(400).send('not found')
+                    }
+                    res.status(200).send(queryChain)
+                } catch (error) {
+                    res.status(400).send({msg:'error on chain search',error})
+}
+        }
